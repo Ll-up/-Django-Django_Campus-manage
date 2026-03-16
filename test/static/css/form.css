@@ -1,0 +1,26 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.container{
+    /* border: 2px solid black;
+    border-radius: 4px; */
+    width: 500px;
+    height: 100%;
+    position: relative;
+}
+
+.form-group{
+    margin: 30px;
+}
+
+.but{
+    position: absolute;
+    left: 38%; 
+}
+
+.cancelButton{
+    position: absolute;
+    left: 47%; 
+}

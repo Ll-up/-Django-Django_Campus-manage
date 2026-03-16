@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录注册</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/iconfont/iconfont.css' %}">
+    <style>
+        .error-message {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: 5px;
+            text-align: left;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class='container' id='container'>
+        <div class="form-container sign-up-container">
+            <!-- 注册 -->
+           <form method="post" action="{% url 'register' %}" id="registerForm">
+            {% csrf_token %}
+            <h1>用户注册</h1>
+            <div class="social-container">
+                <a href="#" class="social"><i class="iconfont icon-qq"></i></a>
+                <a href="#" class="social"><i class="iconfont icon-weixin"></i></a>
+                <a href="#" class="social"><i class="iconfont icon-weibo-copy"></i></a>
+                <a href="#" class="social"><i class="iconfont icon-github"></i></a>
+            </div>
+            <span>您可以选择以上几种方式注册一个您的账户!</span>
+            
+            {% if register_form %}
+                {{ register_form.username }}
+                {% if register_form.username.errors %}
+                    <div class="error-message">{{ register_form.username.errors.0 }}</div>
+                {% endif %}
+                
+                {{ register_form.email }}
+                {% if register_form.email.errors %}
+                    <div class="error-message">{{ register_form.email.errors.0 }}</div>
+                {% endif %}
+                
+                {{ register_form.password1 }}
+                {% if register_form.password1.errors %}
+                    <div class="error-message">{{ register_form.password1.errors.0 }}</div>
+                {% endif %}
+                
+                {{ register_form.password2 }}
+                {% if register_form.password2.errors %}
+                    <div class="error-message">{{ register_form.password2.errors.0 }}</div>
+                {% endif %}
+            {% else %}
+                <input type="text" name="username" placeholder="用户名" required>
+                <input type="email" name="email" placeholder="邮箱" required>
+                <input type="password" name="password1" placeholder="密码" required>
+                <input type="password" name="password2" placeholder="确认密码" required>
+            {% endif %}
+            
+            <button type="submit">注册</button>
+           </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <!-- 登录 -->
+            <form method="post" action="{% url 'login_view' %}" id="loginForm">
+                {% csrf_token %}
+                <h1>用户登录</h1>
+            <div class="social-container">
+                <a href="#" class="social"><i class="iconfont icon-qq"></i></a>
+                <a href="#" class="social"><i class="iconfont icon-weixin"></i></a>
+                <a href="#" class="social"><i class="iconfont icon-weibo-copy"></i></a>
+                <a href="#" class="social"><i class="iconfont icon-github"></i></a>
+            </div>
+            <span>您可以选择以上几种方式登录您的账户!</span>
+            
+            {% if form %}
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error-message">{{ form.username.errors.0 }}</div>
+                {% endif %}
+                
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="error-message">{{ form.password.errors.0 }}</div>
+                {% endif %}
+            {% else %}
+                <input type="text" name="username" placeholder="用户名" required>
+                <input type="password" name="password" placeholder="密码" required>
+            {% endif %}
+            
+            <a href="#">忘记密码？</a>
+            <button type="submit">登录</button>
+            </form>
+        </div>
+        <!-- 侧边栏内容 -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>已有帐号？</h1>
+                    <p>快快点我去进行登录吧。</p>
+                    <button class='ghost' id="signIn">登录</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>没有帐号？</h1>
+                    <p>点击注册去注册一个属于你的账号吧。</p>
+                    <button class='ghost' id="signUp">注册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="{% static 'js/index.js' %}"></script>
+<script src="{% static 'js/sweetalert2.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 登录表单处理
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();//阻止表单默认提交，避免整页刷新
+            
+            const formData = new FormData(loginForm);//把表单里所有输入框一键打包
+            
+            fetch(loginForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',//是异步
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),// CSRF 令牌
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        text: '正在跳转...'
+                    }).then(() => {
+                        window.location.href = data.redirect_url || '/';//如果服务器给了跳转地址，就去那里；没给就去首页。
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '登录失败',
+                        text: data.message || '请检查用户名和密码'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '网络错误',
+                    text: '请检查网络连接后重试'
+                });
+            });
+        });
+    }
+    
+    // 注册表单处理
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(registerForm);
+            
+            fetch(registerForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.message,
+                        text: '正在跳转...'
+                    }).then(() => {
+                        window.location.href = data.redirect_url || '/';
+                    });
+                } else {
+                    let errorMessage = data.message || '注册失败';
+                    if (data.errors) {
+                        errorMessage += '\n';
+                        for (const field in data.errors) {
+                            data.errors[field].forEach(error => {
+                                errorMessage += `\n${error.message}`;
+                            });
+                        }
+                    }
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: '注册失败',
+                        text: errorMessage
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '网络错误',
+                    text: '请检查网络连接后重试'
+                });
+            });
+        });
+    }
+});
+</script>
+</html>

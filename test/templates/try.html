@@ -1,0 +1,34 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试</title>
+    <link href="{% static 'css/try.css' %} " rel="stylesheet"/>
+     <script src="{% static 'js/try.js' %}"></script>
+</head>
+<body>
+    <div class="container">
+        <p id="l">你好</p>
+        <span>nice to meet you</span>
+    </div>
+    <div class="changeimg">
+        <img class="active" src="{% static '6A7ECE0528DC951CD16F567A4E5FEAC7.jpg' %}" alt="图片无法显示"/>
+
+        <img class="lk" src="{% static 'IMG_3659(20250901-071821).jpg' %}" alt="图片无法显示"/>
+
+        <img class="lj" src="{% static 'IMG_3661(20250901-071821).jpg' %}" alt="图片无法显示"/>
+
+        <img class="lh" src="{% static 'IMG_3701(20250906-142629).jpg' %}" alt="图片无法显示"/>
+    </div>
+    <div class="button_container">
+        <button class="pre">上一张</button>
+        <button class="next">下一张</button>
+    </div>
+    <div class="pa">
+    <span class="page">1</span><span>/4</span>
+    </div>
+</body>
+</html>

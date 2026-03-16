@@ -1,0 +1,204 @@
+{% extends "main.html" %}
+{% load static %}
+{% block content %}
+<link href="{% static 'css/list.css' %}?v={{ timestamp|default:'1' }}"  rel="stylesheet"/>
+
+<style>
+    .search-form-container {
+        margin-bottom: 20px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.5); ;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .search-form input[type="text"],
+    .search-form select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+    .search-form input[type="text"]:focus,
+    .search-form select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    .search-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+    .search-form-grid {
+        position: relative;
+        top: 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .search-buttons {
+        position: relative;
+        top: 18px;
+        display: flex;
+        gap: 10px;
+    }
+    .search-buttons button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    .search-buttons button:hover {
+        background-color: #0056b3;
+    }
+    .search-buttons a {
+        padding: 10px 20px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+    .search-buttons a:hover {
+        background-color: #5a6268;
+    }
+</style>
+
+<!-- 搜索表单 -->
+<div class="search-form-container">
+    <form method="get" class="search-form">
+        <div class="search-form-grid">
+            <div>
+                <label for="id_number">学籍号:</label>
+                {{ filter.form.number }}
+            </div>
+            <div>
+                <label for="id_student_name">姓名:</label>
+                {{ filter.form.student_name }}
+            </div>
+            <div>
+                <label for="id_gender">性别:</label>
+                {{ filter.form.gender }}
+            </div>
+            <div>
+                <label for="id_grade">班级:</label>
+                {{ filter.form.grade }}
+            </div>
+            <div>
+                <label for="id_contact_number">联系方式:</label>
+                {{ filter.form.contact_number }}
+            </div>
+            <div>
+                <label for="id_address">家庭住址:</label>
+                {{ filter.form.address }}
+            </div>
+        </div>
+        <div class="search-buttons">
+            <button type="submit">搜索</button>
+            <a href="{% url 'student_list' %}">重置</a>
+        </div>
+    </form>
+</div>
+
+ <table><!--表格容器 -->
+    <thead>
+         <th>id</th><!--行头 -->
+        <th>姓名</th>
+        <th>性别</th>
+        <th>出生日期</th>
+        <th>电话号码</th>
+        <th>住址</th>
+        <th>班级</th>
+        <th>操作</th>
+    </thead>
+    <tbody>
+    {% if student %}
+        {% for stu in student %}
+        <tr>
+            <td>{{stu.id}}</td>
+            <td>{{stu.student_name}}</td>
+            <td>{{stu.gender}}</td>
+            <td>{{stu.birthday}}</td>
+            <td>{{stu.contact_number}}</td>
+            <td>{{stu.address}}</td>
+            <td>{{stu.grade}}</td>
+            <td><a class="edit" href="{% url 'student_update' stu.pk %}">编辑</a>|<a class="delete" href="{% url 'student_delete' stu.pk %}">删除</a></td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="8" style="text-align: center; padding: 20px; color: #999;">没有找到符合条件的学生信息</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>
+
+<button id="create">新增学生</button>
+<script>
+var a=document.querySelectorAll('a')
+a[0].className="nav-items"
+a[1].className="nav-items active"
+document.getElementById("create").addEventListener('click',function(){
+ Swal.fire({
+  position: "top-end",
+  html: `<iframe src="{% url 'student_create' %}" width="100%",height="100%" frameborder="0"><iframe>`,
+  width: 600,
+  showConfirmButton: false
+});  
+})
+
+document.querySelectorAll('.edit').forEach(button=>{
+    button.addEventListener('click',function(e){
+        e.preventDefault()//阻止跳转
+        url=this.getAttribute('href')
+        console.log(url)
+        Swal.fire({
+            position:"top-end",
+            html:`<iframe src="${url}" width="100%",height="800px" frameborder="0"><iframe>`,
+            width: 600,
+            showConfirmButton:false
+        })
+    })
+})
+
+//点击删除
+document.querySelectorAll('.delete').forEach(button=>{
+    button.addEventListener('click',function(e){
+        e.preventDefault();
+        url=this.getAttribute('href')
+        swal.fire({
+                title: "确认删除",
+                icon: "success",
+                showConfirmButton: true,
+                confirmButtonTex:"删除",
+                confirmButtonColor:"%d33",
+            }).then((result)=>{
+                if (result.isConfirmed){
+                    fetch(url,{
+                        method:'DELETE',
+                        headers:{
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken':'{{ csrf_token }}',
+                        }
+                                }).then(()=>window.parent.location.reload())
+                                    }
+                })
+    })
+})
+</script>
+<script
+async
+defer
+src="http://localhost:8080/chat/api/embed?protocol=http&host=localhost:8080&token=25699b62696da192">
+</script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<link href="{% static 'css/home.css' %}?v={{ timestamp|default:'1' }}" rel="stylesheet"/>
+<div class="content">
+    <img src="{% static 'bac 3.png' %}" alt="background" class="back-3">
+
+    <div class="title">
+      <h3>Campus Management System</h3>
+      <h1>校园管理</h1>
+    </div>
+
+    <img src="{% static 'bac 2.2.png' %}" alt="background" class="back-2">
+    <img src="{% static 'bac 1.png' %}" alt="background" class="back-1">
+
+    <div class="info-wrap">
+      <p>
+        欢迎使用校园管理系统！这是一个功能完善的学校管理平台，提供学生信息管理、教师信息管理、班级管理等功能。通过本系统，您可以轻松管理学校的各项事务，提高工作效率。
+      </p>
+    </div>
+    
+<div class="welcome-text">
+      {% if user.is_authenticated %}
+          <p>欢迎 {{ user.username }},您已成功登录系统，可以开始使用各项功能。</p>
+        
+      {% else %}
+          <!-- <a href="{% url 'login' %}" class="login-link">立即登录</a> -->
+          <p>您需要登录后才能使用系统功能。</p>
+          
+        
+      {% endif %} 
+</div>
+    <div class="cta">
+      <button>
+        login
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+</div>
+{% endblock %}

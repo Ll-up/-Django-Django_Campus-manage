@@ -1,0 +1,83 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    background-image: url("../x6.jpg");
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+/*body::after { 给整页下半部分盖上一层从透明到黑的渐变遮罩，让顶部更亮、底部更暗，内容层次瞬间立体。 
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: linear-gradient(transparent 50%, rgb(0, 0, 0));
+}*/
+
+ table {
+           width: 100%;
+           border-collapse: collapse; /* 边框合并 */
+           margin: 25px 0;
+           background-color: rgba(255, 255, 255, 0.4);
+           font-size: 1.2em;
+           font-weight: 500;
+           margin-top:80px;
+           font-family: sans-serif;
+           min-width: 400px;
+           backdrop-filter: blur(8px);
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+       }
+
+th, td {
+           text-align: left;
+           padding:10px 10px;
+       }
+
+thead tr {
+    background-color:hwb(106 29% 26%); /* 背景颜色 */
+    color: #000000; /* 文本颜色 */
+    font-weight: bold; /* 字体加粗 */
+}
+
+#create{
+    font-size: 16px;
+    border: 4px solid greenyellow;
+    border-radius: 6px;
+    background-color: aquamarine;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+    transition: font-size 0.5s;
+    z-index: 1;/*叠放层级设为 1，保证遮罩、背景图等不会盖住它*/
+}
+
+#create:hover{
+    color: rgb(8, 61, 3);
+    font-size:20px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.edit{
+    color: #212020;
+    z-index: 1;/*叠放层级设为 1，保证遮罩、背景图等不会盖住它*/
+}
+
+.edit:hover{
+    color: #5fc51b;
+}
+
+.delete{
+   z-index: 1;/*叠放层级设为 1，保证遮罩、背景图等不会盖住它*/ 
+}
+
+.delete:hover{
+    color: #16c656;
+}

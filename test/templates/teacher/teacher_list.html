@@ -1,0 +1,114 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<link href="{% static 'css/list.css' %}?v={{ timestamp|default:'1' }}"  rel="stylesheet"/>
+
+ <table><!--表格容器 -->
+    <thead>
+         <th>id</th><!--行头 -->
+        <th>姓名</th>
+        <th>性别</th>
+        <th>出生日期</th>
+        <th>电话号码</th>
+        <th>住址</th>
+        <th>操作</th>
+    </thead>
+    <tbody>
+    {% for tea in teacher %}
+    <tr>
+        <td>{{tea.id}}</td>
+        <td>{{tea.teacher_name}}</td>
+        <td>{{tea.gender}}</td>
+        <td>{{tea.birthday}}</td>
+        <td>{{tea.contact_number}}</td>
+        <td>{{tea.address}}</td>
+        <td><a class="edit" href="{% url 'teacher_update' tea.pk %}">编辑</a>|<a class="delete" href="{% url 'teacher_delete' tea.pk %}">删除</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<button id="create">新增教师</button>
+<!-- 前端读取后端发送的数据 -->
+<button id="zhans">展示</button>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    var a=document.querySelectorAll('a')
+    a[0].className="nav-items"
+    a[2].className="nav-items active"
+    document.getElementById("create").addEventListener("click",function(){
+        Swal.fire({
+        position: "top-end",
+        html: `<iframe src="{% url 'teacher_create' %}" width="100%",height="100%" frameborder="0"><iframe>`,
+        width: 600,
+        showConfirmButton: false
+        })
+    })
+
+    document.querySelectorAll('.edit').forEach(button=>{
+    button.addEventListener('click',function(e){
+        e.preventDefault()//阻止跳转
+        url=this.getAttribute('href')
+        console.log(url)
+        Swal.fire({
+            position:"top-end",
+            html:`<iframe src="${url}" width="100%",height="800px" frameborder="0"><iframe>`,
+            width: 600,
+            showConfirmButton:false
+        })
+    })
+})
+
+//点击删除
+document.querySelectorAll('.delete').forEach(button=>{
+    button.addEventListener('click',function(e){
+        e.preventDefault();
+        url=this.getAttribute('href')
+        swal.fire({
+                title: "确认删除",
+                icon: "success",
+                showConfirmButton: true,
+                confirmButtonTex:"删除",
+                confirmButtonColor:"%d33",
+            }).then((result)=>{
+                if (result.isConfirmed){
+                    fetch(url,{
+                        method:'DELETE',
+                        headers:{
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken':'{{ csrf_token }}',
+                        }
+                                }).then(()=>window.parent.location.reload())
+                                    }
+                })
+    })
+})
+
+
+//前端读取后端发送的JS数据
+const readtea=document.getElementById('zhans').addEventListener('click',function(e){
+    e.preventDefault()
+    axios
+        .get('/teacher/api/')
+        .then(res=>{
+            const list=res.data;
+            const tab=document.querySelector('table')
+            list.forEach(t=>{
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td class="border p-2">${t.id}</td>
+                <td class="border p-2">${t.teacher_name}</td>
+                <td class="border p-2">${t.gender }</td>
+                <td class="border p-2">${t.birthday}</td>
+                <td class="border p-2">${t.contact_number}</td>
+                <td class="border p-2">${t.address}</td>`
+
+                tab.appendChild(row);       // 插到表格
+            })
+        })
+})
+
+</script>
+
+{% endblock %}

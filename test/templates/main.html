@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园管理系统</title>
+    <link href="{% static 'css/first.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/sweetalert2.css' %}" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="text/javascript" src="{% static 'js/sweetalert2.js' %}"></script>
+    <style>
+        .user-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .welcome-text {
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .login-btn, .logout-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .login-btn:hover, .logout-btn:hover {
+            background-color: #45a049;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logout-btn {
+            background-color: #f44336;
+        }
+        
+        .logout-btn:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+        <a class="nav-items active" href="http://127.0.0.1:8000/">首页</a>
+        <a class="nav-items" href="http://127.0.0.1:8000/student">学生管理</a>
+        <a class="nav-items" href="http://127.0.0.1:8000/teacher">教师管理</a>
+        <a class="nav-items" href="http://127.0.0.1:8000/grade">班级管理</a>
+        
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="logout-btn">登出</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="login-btn">登录</a>
+            {% endif %}
+        </div>
+        </nav>
+    </header>
+{% block content %}
+
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="{% static 'css/form.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/sweetalert2.css' %}" rel="stylesheet"/>
+    <script type="text/javascript" src="{% static 'js/sweetalert2.js' %}"></script>
+
+</head>
+<body>
+<div class="container">
+    <h2>添加教师信息</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{field}}
+            {% if field.help_text %}
+            <small class="form-text text-muted">{{field.help_text}}</small>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button class="but" type="submit">提交</button>
+        <button class="cancelButton" type="button" onclick="window.parent.Swal.close();">取消</button>
+    </form>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded',function () {
+        const form = document.querySelector('form');
+        const url = "{% url 'teacher_create' %}"
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止表单默认提交
+            let formData = new FormData(form)
+            // 使用fetch发送请求
+            fetch(url, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+              }
+            }).then(response => response.json())
+            .then(data=> {
+              if (data.status === 'success') {
+                Swal.fire({
+                  icon: 'success',
+                  title: data.messages,
+                  text: '数据已成功提交'
+                }
+              ).then((result) => {
+                  if (result.value) {
+                    // 刷新父页面
+                    window.parent.location.reload()
+                  }
+                })
+              } else {
+                  // 解析嵌套的 JSON 字符串
+                 const errors = JSON.parse(data.messages);
+                 // 构造错误信息的文本
+                 let errorMessage = '';
+                 for (const field in errors) {
+                     if (errors.hasOwnProperty(field)) {
+                         errors[field].forEach(error => {
+                             errorMessage += `<li style="color:red;text-align:left;margin-left: 100px;"> ${error.message} </li>`;
+                         });
+                     }
+                 }
+                  // 使用 SweetAlert2 显示错误信息
+                  Swal.fire({
+                      icon: 'error',
+                      title: '提交错误',
+                      html: errorMessage,
+                      confirmButtonText: '关闭'
+                  });
+              }
+            })
+        })
+    })
+</script>
+</body>
+</html>
